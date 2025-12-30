@@ -1,0 +1,146 @@
+<header class="app-header">
+  <img
+    src="assets/tonicorp.png"
+    alt="Tonicorp"
+    class="app-header__logo"
+  />
+
+  <h1 class="app-header__title">
+    PRUEBA PRÁCTICA IN & OUT – MEMORIZACIÓN DE NOTAS
+  </h1>
+</header>
+<form [formGroup]="form" class="card p-fluid">
+
+  <div class="form-header">
+
+    <div class="form-field">
+      <p-floatlabel variant="on">
+        <input
+          class="input-floatlabel"
+          pInputText
+          id="cedula"
+          formControlName="cedula" />
+        <label for="cedula">Cédula</label>
+      </p-floatlabel>
+    </div>
+    <div class="form-field">
+      <p-floatlabel variant="on">
+        <input
+          class="input-floatlabel"
+          pInputText
+          id="nombre"
+          formControlName="nombre" />
+        <label for="nombre">Nombre</label>
+      </p-floatlabel>
+    </div>
+
+    <div class="form-field">
+      <p-floatlabel variant="on">
+        <input
+          class="input-floatlabel"
+          pInputText
+          id="producto"
+          formControlName="producto" />
+        <label for="producto">Producto</label>
+      </p-floatlabel>
+    </div>
+
+    <div class="form-field">
+        <p-floatlabel variant="on" class="input-floatlabel">
+            <p-datepicker
+              formControlName="fecha"
+              inputId="fecha_input"
+              [showIcon]="true"
+              iconDisplay="input"
+              dateFormat="dd/mm/yy">
+            </p-datepicker>
+            <label for="fecha_input">Fecha</label>
+        </p-floatlabel>
+    </div>
+  </div>
+
+  <table class="p-datatable p-component w-full">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>¿Dentro / Fuera?</th>
+        <th>Observación (si es Fuera)</th>
+      </tr>
+    </thead>
+
+    <tbody formArrayName="respuestas">
+      @for (item of respuestas.controls; track $index; let i = $index) {
+        <tr 
+          [formGroupName]="i"
+          [ngClass]="{ 'fila-activa': filaActivaIndex === i }"
+          (click)="filaActivaIndex = i"
+          (focusin)="filaActivaIndex = i">
+          <td>
+            {{ muestras[i].codigoMuestra }}
+          </td>
+          <td>
+            <div class="estado-container">
+              <div class="radios">
+                <div class="radio-item">
+                  <p-radiobutton
+                    [name]="'respuesta_' + i"
+                    value="Dentro"
+                    formControlName="respuesta"
+                    [inputId]="'dentro_' + i" />
+                  <label [for]="'dentro_' + i">Dentro</label>
+                </div>
+
+                <div class="radio-item">
+                  <p-radiobutton
+                    [name]="'respuesta_' + i"
+                    value="Fuera"
+                    formControlName="respuesta"
+                    [inputId]="'fuera_' + i" />
+                  <label [for]="'fuera_' + i">Fuera</label>
+                </div>
+              </div>
+              @if (
+                item.get('respuesta')?.invalid &&
+                item.get('respuesta')?.touched
+              ) {
+                <small class="p-error">La respuesta es requerida</small>
+              }
+            </div>
+          </td>
+          <td class="observacion-cell">
+            <div class="observacion-wrapper">
+              <p-autoComplete
+                formControlName="observacion"
+                [suggestions]="observacionesFiltradas"
+                (completeMethod)="filtrarObservaciones($event)"
+                optionLabel="nombre"
+                [dropdown]="true"
+                [virtualScroll]="true"
+                [virtualScrollItemSize]="34"
+                placeholder="Observación"
+                class="w-full p-autoComplete-observacion">
+              </p-autoComplete>
+              <span
+                class="error-inline"
+                [class.visible]="item.get('observacion')?.invalid && item.get('observacion')?.touched">
+                Observación obligatoria
+              </span>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+
+  <div class="form-actions">
+    <button
+      pButton
+      type="button"
+      label="Enviar"
+      icon="pi pi-save"
+      [disabled]="form.invalid"
+      (click)="submit()">
+    </button>
+  </div>
+
+</form>
